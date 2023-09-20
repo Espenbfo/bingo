@@ -1,7 +1,7 @@
-import { NewBingoForm } from "./components/new-bingo-form"
-
+import { NewBingoForm } from "./components/form-components/new-bingo-form"
+import "./App.css"
 const NewBingoPage = () => {
-    return <NewBingoForm></NewBingoForm>
+    return <main className="formApp"><NewBingoForm></NewBingoForm></main>
 }
 
 export default NewBingoPage
