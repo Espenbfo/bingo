@@ -30,14 +30,12 @@ export const NewBingoForm = ({ }: Props) => {
     const defaultTitle = searchParams.get("title")
 
 
-
-
     const { register, handleSubmit, watch, formState: { errors }, control } = useForm<FormValues>({
         resolver: zodResolver(schema),
         defaultValues: {
             backgroundColor: defaultBackgroundColorSearchParam ?? "",
             textColor: defaultTextColorSearchParam ?? "",
-            option: defaultOptions.length ? defaultOptions.map(val => ({ value: val })) : [],
+            option: defaultOptions.length ? defaultOptions.map(val => ({ value: val })) : Array.from(Array(16).keys()).map(() => ({ value: "" })),
             title: defaultTitle ?? ""
         }
     });
@@ -69,7 +67,7 @@ export const NewBingoForm = ({ }: Props) => {
             <div className="bingo-fields-section">
                 {fields.map((field, index) => (
                     <InputField
-                        name={`Option ${index + 1}`}
+                        name={`Option`}
                         onRemove={() => remove(index)}
                         key={field.id} // important to include key with field's id
                         label={`option.${index}.value`}

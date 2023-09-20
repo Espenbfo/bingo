@@ -71,6 +71,7 @@ function BingoPage() {
             setTitle(titleSearchParam)
 
     }, [searchParams])
+    console.log(!!boardState?.squares.length)
     return (
         <div className="app">
             <header className="header">
@@ -81,16 +82,19 @@ function BingoPage() {
 
                     <ButtonGroup>
                         <Button className={"button"} variant="primary"
-                            onClick={() => returnToForm()}>{"Edit bingo values"}</Button>
-                        <Button variant="warning" onClick={() => {
+                            onClick={() => returnToForm()}>{boardState?.squares.length ? "Edit bingo tiles" : "Create bingo tile set"}</Button>
+                        {!!boardState?.squares.length && <Button variant="warning" disabled={!boardState?.squares.length} onClick={() => {
                             setBoardState(newBingo(bingoElements));
-                        }}>New board</Button>
+                        }}>Generate new board</Button>}
                     </ButtonGroup>
-                    <Grid>
-                        {boardState?.squares.map((value, index) =>
-                            <BingoSquare active={value.active} text={value.text} key={index}
-                                onClick={activateSquare(index)} />)}
-                    </Grid>
+                    {boardState?.squares.length ? (
+                        <Grid>
+                            {boardState?.squares.map((value, index) =>
+                                <BingoSquare active={value.active} text={value.text} key={index}
+                                    onClick={activateSquare(index)} />)}
+                        </Grid>
+                    ) : (<div className='onboarding-message-wrapper'><div>No board yet :( <br /> Start by either clicking the button above to create a new bingo tile set or by pasting in a tile set created by someone else in the url</div></div>)}
+
                     {showBingoOverlay && <BingoAlert open={showBingoOverlay} onClick={() => setShowBingoOverlay(false)} />}
                 </>)}
 
