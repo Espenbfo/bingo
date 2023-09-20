@@ -46,11 +46,9 @@ export const NewBingoForm = ({ }: Props) => {
     });
 
     const onSubmit = (data: any) => {
-        console.log(data)
+        localStorage.removeItem("state")
         navigate({ pathname: "/bingo", search: `?${createSearchParams(formDataToBingoData(data))}` })
     }
-
-    console.log()
 
     return (
         <form className={clsx("main-form")} onSubmit={handleSubmit(onSubmit)}>
