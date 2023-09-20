@@ -9,6 +9,6 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
 export const ColorSelect = ({ register, label }: Props) => {
     return (<div className="wrapper">
         {label}
-        <input type="color"{...register("textColor")} />
+        <input type="color"{...register(label)} />
     </div>)
 }

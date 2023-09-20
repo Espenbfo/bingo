@@ -1,27 +1,37 @@
-import React, {useEffect, useState} from 'react';
-import {Grid} from "./components/grid";
+import React, { useEffect, useState } from 'react';
+import { Grid } from "./components/grid";
 import "./App.css"
-import {BingoSquare} from "./components/bingo-square";
-import {BoardState, loadSongs, newBingo, SongData, update} from "./helper-functios";
+import { BingoSquare } from "./components/bingo-square";
+import { BoardState, loadSongs, newBingo, update } from "./helper-functios";
 import cloneDeep from "lodash/cloneDeep"
-import {BingoAlert} from "./components/bingo-alert";
-import {ButtonGroup} from "./components/button-group";
-import {Button} from "react-bootstrap";
-import {SongTable} from "./components/song-table";
+import { BingoAlert } from "./components/bingo-alert";
+import { ButtonGroup } from "./components/button-group";
+import { Button } from "react-bootstrap";
+import { createSearchParams, useNavigate, useSearchParams } from 'react-router-dom';
 
 
 function BingoPage() {
+    let [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
+
+    const [bingoElements, setBingoElements] = useState<string[]>([]);
+    const [backgroundColor, setBackgroundColor] = useState<string>("");
+    const [textColor, setTextColor] = useState<string>("");
+    const [title, setTitle] = useState<string>("");
+
     const [boardState, setBoardState] = useState<BoardState | undefined>(undefined)
     const [showBingoOverlay, setShowBingoOverlay] = useState(false)
-    const [showBingoGrid, setShowBingoGrid] = useState(true)
-    const [songs, setSongs] = useState<SongData[] | undefined>(undefined)
+
+    const returnToForm = () => {
+        navigate({ pathname: "/", search: `?${createSearchParams(searchParams)}` })
+    }
 
     const activateSquare = (index: number) => () => {
         setBoardState(prevState => {
             if (prevState) {
                 const newSquareState = cloneDeep(prevState)
                 newSquareState.squares[index].active = !newSquareState.squares[index].active
-                const {newState, bingo} = update(newSquareState)
+                const { newState, bingo } = update(newSquareState)
                 if (bingo) setShowBingoOverlay(bingo)
                 return newState
             }
@@ -29,44 +39,17 @@ function BingoPage() {
         })
     }
 
-    const updateScore = (index: number) => (mode: string) =>  (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSongs(prevState => {
-            if (prevState)  {
-                const newState = cloneDeep(prevState)
-                if (!isNaN(Number.parseFloat(event.target.value))) {
-                    switch (mode) {
-                        case "song":
-                            newState[index].songScore = Number.parseFloat(event.target.value);
-                            break;
-                        case "scene":
-                            newState[index].sceneScore = Number.parseFloat(event.target.value);
-                            break;
-                        case "original":
-                            newState[index].originalScore = Number.parseFloat(event.target.value);
-                            break;
-                    }
-                }
-                return newState;
-            }
-
-            return prevState;
-        })
-    }
     useEffect(() => {
-        const storage = localStorage.getItem("state")
-        console.log(loadSongs())
-        if (storage != null) {
-            setBoardState(JSON.parse(storage))
-        } else {
-            setBoardState(newBingo())
+        if (bingoElements.length) {
+            const storage = localStorage.getItem("state")
+            console.log(loadSongs())
+            if (storage != null) {
+                setBoardState(JSON.parse(storage))
+            } else {
+                setBoardState(newBingo(bingoElements))
+            }
         }
-        const songStorage = localStorage.getItem("songs")
-        if (songStorage != null) {
-            setSongs(JSON.parse(songStorage))
-        } else {
-            setSongs(loadSongs())
-        }
-    }, [])
+    }, [bingoElements])
 
     useEffect(() => {
         if (boardState) {
@@ -75,35 +58,44 @@ function BingoPage() {
     }, [boardState])
 
     useEffect(() => {
-        if (songs) {
-            localStorage.setItem("songs", JSON.stringify(songs))
-        }
-    }, [songs])
+        const options = searchParams.getAll("option")
+        setBingoElements(options);
+        const backgroundColorSearchParam = searchParams.get("backgroundColor")
+        if (backgroundColorSearchParam)
+            setBackgroundColor(backgroundColorSearchParam)
+        const textColorSearchParam = searchParams.get("textColor")
+        if (textColorSearchParam)
+            setBackgroundColor(textColorSearchParam)
+        const titleSearchParam = searchParams.get("title")
+        if (titleSearchParam)
+            setTitle(titleSearchParam)
 
+    }, [searchParams])
+    console.log(searchParams)
     return (
         <div className="app">
             <header className="header">
-                Eurovision Bingo & Score card
+                {title}
             </header>
+            {bingoElements && (
+                <>
 
-            <ButtonGroup>
-                <Button className={"button"} variant="primary"
-                        onClick={() => setShowBingoGrid(!showBingoGrid)}>{showBingoGrid ? "View Scores" : "View Bingo"}</Button>
-                <Button variant="warning" onClick={() => {
-                    setBoardState(newBingo());
-                    setSongs(loadSongs());
-                    setShowBingoGrid(true);
-                }}>Reset</Button>
-            </ButtonGroup>
+                    <ButtonGroup>
+                        <Button className={"button"} variant="primary"
+                            onClick={() => returnToForm()}>{"Edit bingo values"}</Button>
+                        <Button variant="warning" onClick={() => {
+                            setBoardState(newBingo(bingoElements));
+                        }}>New board</Button>
+                    </ButtonGroup>
+                    <Grid>
+                        {boardState?.squares.map((value, index) =>
+                            <BingoSquare active={value.active} text={value.text} key={value.text}
+                                onClick={activateSquare(index)} />)}
+                    </Grid>
+                    {showBingoOverlay && <BingoAlert open={showBingoOverlay} onClick={() => setShowBingoOverlay(false)} />}
+                </>)}
 
-            {showBingoGrid ? (<Grid>
-                    {boardState?.squares.map((value, index) =>
-                        <BingoSquare active={value.active} text={value.text} key={value.text}
-                                     onClick={activateSquare(index)}/>)}
-                </Grid>) :
-                (<SongTable songs={songs} updateScore={updateScore}/>)}
 
-            {showBingoOverlay && <BingoAlert open={showBingoOverlay} onClick={() => setShowBingoOverlay(false)}/>}
 
         </div>
     );
