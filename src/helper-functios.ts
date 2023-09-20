@@ -23,13 +23,13 @@ export type BoardState = { squares: BingoElement[], bingoRows: BingoArray, bingo
 
 const boardSize = 4
 
-export const newBingo = (): BoardState => {
+export const newBingo = (bingoElements: string[]): BoardState => {
     shuffleArray(bingoElements)
     return {
         squares: bingoElements.slice(0, boardSize * boardSize).map((element: string) => ({
-                active: false,
-                text: element
-            }),
+            active: false,
+            text: element
+        }),
         ),
         bingoRows: range(0, boardSize).map(() => false),
         bingoCols: range(0, boardSize).map(() => false),
@@ -49,7 +49,7 @@ export const update = (state: BoardState): { newState: BoardState; bingo: boolea
     const diags = evaluateDiag(state.squares);
     const bingo = isBingo(rows, state.bingoRows) || isBingo(cols, state.bingoCols) || isBingo(diags, state.bingoDiagonals)
 
-    return {newState: {squares: state.squares, bingoDiagonals: diags, bingoCols: cols, bingoRows: rows}, bingo}
+    return { newState: { squares: state.squares, bingoDiagonals: diags, bingoCols: cols, bingoRows: rows }, bingo }
 }
 
 const evaluateRows = (elements: BingoElement[]) => {
@@ -66,11 +66,12 @@ const evaluateCols = (elements: BingoElement[]) => {
 }
 const evaluateDiag = (elements: BingoElement[]) => {
     return [range(0, boardSize).every(value => elements[value * boardSize + value].active),
-        range(0, boardSize).every(value => elements[boardSize - value-1 + value * boardSize].active)]
+    range(0, boardSize).every(value => elements[boardSize - value - 1 + value * boardSize].active)]
 }
 
-export type SongData = {country: string, artist: string, song: string, songScore?: number, sceneScore?: number, originalScore?: number}
+export type SongData = { country: string, artist: string, song: string, songScore?: number, sceneScore?: number, originalScore?: number }
 export const loadSongs = (): SongData[] => {
-    return songs.map(song => ({...song, songScore: 0, sceneScore: 0, originalScore: 0
-        }));
+    return songs.map(song => ({
+        ...song, songScore: 0, sceneScore: 0, originalScore: 0
+    }));
 }
