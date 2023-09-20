@@ -71,7 +71,6 @@ function BingoPage() {
             setTitle(titleSearchParam)
 
     }, [searchParams])
-    console.log(searchParams)
     return (
         <div className="app">
             <header className="header">
@@ -89,7 +88,7 @@ function BingoPage() {
                     </ButtonGroup>
                     <Grid>
                         {boardState?.squares.map((value, index) =>
-                            <BingoSquare active={value.active} text={value.text} key={value.text}
+                            <BingoSquare active={value.active} text={value.text} key={index}
                                 onClick={activateSquare(index)} />)}
                     </Grid>
                     {showBingoOverlay && <BingoAlert open={showBingoOverlay} onClick={() => setShowBingoOverlay(false)} />}
