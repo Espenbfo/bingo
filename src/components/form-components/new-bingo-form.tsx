@@ -27,6 +27,9 @@ export const NewBingoForm = ({ }: Props) => {
 
     const defaultTextColorSearchParam = searchParams.get("textColor")
 
+    const defaultTitle = searchParams.get("title")
+
+
 
 
     const { register, handleSubmit, watch, formState: { errors }, control } = useForm<FormValues>({
@@ -34,8 +37,8 @@ export const NewBingoForm = ({ }: Props) => {
         defaultValues: {
             backgroundColor: defaultBackgroundColorSearchParam ?? "",
             textColor: defaultTextColorSearchParam ?? "",
-            option: defaultOptions.length ? defaultOptions.map(val => ({ value: val })) : []
-
+            option: defaultOptions.length ? defaultOptions.map(val => ({ value: val })) : [],
+            title: defaultTitle ?? ""
         }
     });
 
