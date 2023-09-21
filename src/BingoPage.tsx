@@ -40,9 +40,8 @@ function BingoPage() {
     }
 
     useEffect(() => {
-        if (bingoElements.length) {
+        if (bingoElements.length > 0) {
             const storage = localStorage.getItem("state")
-            console.log(loadSongs())
             if (storage != null) {
                 setBoardState(JSON.parse(storage))
             } else {
