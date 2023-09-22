@@ -8,7 +8,7 @@ import { BingoAlert } from "./components/bingo-alert";
 import { ButtonGroup } from "./components/button-group";
 import { Button } from "react-bootstrap";
 import { createSearchParams, useNavigate, useSearchParams } from 'react-router-dom';
-
+import { getHashFromBingoElements, getStateFromHash, storeStateWithHash } from './storage';
 
 function BingoPage() {
     let [searchParams, setSearchParams] = useSearchParams();
@@ -40,23 +40,6 @@ function BingoPage() {
     }
 
     useEffect(() => {
-        if (bingoElements.length > 0) {
-            const storage = localStorage.getItem("state")
-            if (storage != null) {
-                setBoardState(JSON.parse(storage))
-            } else {
-                setBoardState(newBingo(bingoElements))
-            }
-        }
-    }, [bingoElements])
-
-    useEffect(() => {
-        if (boardState) {
-            localStorage.setItem("state", JSON.stringify(boardState))
-        }
-    }, [boardState])
-
-    useEffect(() => {
         const options = searchParams.getAll("option")
         setBingoElements(options);
         const backgroundColorSearchParam = searchParams.get("backgroundColor")
@@ -70,7 +53,26 @@ function BingoPage() {
             setTitle(titleSearchParam)
 
     }, [searchParams])
-    console.log(!!boardState?.squares.length)
+
+    useEffect(() => {
+        if (bingoElements.length > 0) {
+            const hash = getHashFromBingoElements(bingoElements);
+            const storedState = getStateFromHash(hash);
+            if (storedState != undefined) {
+                setBoardState(storedState)
+            } else {
+                setBoardState(newBingo(bingoElements))
+            }
+        }
+    }, [bingoElements])
+
+    useEffect(() => {
+        if (boardState) {
+            const hash = getHashFromBingoElements(bingoElements);
+            storeStateWithHash(boardState, hash);
+        }
+    }, [boardState])
+
     return (
         <div className="app">
             <header className="header">
