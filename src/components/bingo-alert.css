@@ -29,21 +29,19 @@ p {
 
 @keyframes bouncing {
     0% {
-    font-size: 4rem;
-        color: red;
+        font-size: 4rem;
     }
 
     33% {
-        font-size: 5rem;
+        font-size: 4.25rem;
+    }
 
-        color: yellow;}
     66% {
-        font-size: 6rem;
+        font-size: 3.9rem;
+    }
 
-        color: green;}
     100% {
         font-size: 4rem;
-        color: red;
     }
 
 }

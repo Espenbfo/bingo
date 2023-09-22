@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Grid } from "./components/grid";
 import "./App.css"
 import { BingoSquare } from "./components/bingo-square";
-import { BoardState, loadSongs, newBingo, update } from "./helper-functios";
+import { BoardState, newBingo, update } from "./helper-functios";
 import cloneDeep from "lodash/cloneDeep"
 import { BingoAlert } from "./components/bingo-alert";
 import { ButtonGroup } from "./components/button-group";
@@ -11,11 +11,12 @@ import { createSearchParams, useNavigate, useSearchParams } from 'react-router-d
 import { getHashFromBingoElements, getStateFromHash, storeStateWithHash } from './storage';
 
 function BingoPage() {
-    let [searchParams, setSearchParams] = useSearchParams();
+    let [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
     const [bingoElements, setBingoElements] = useState<string[]>([]);
     const [backgroundColor, setBackgroundColor] = useState<string>("");
+    const [tileColor, setTileColor] = useState<string>("");
     const [textColor, setTextColor] = useState<string>("");
     const [title, setTitle] = useState<string>("");
 
@@ -24,6 +25,10 @@ function BingoPage() {
 
     const returnToForm = () => {
         navigate({ pathname: "/", search: `?${createSearchParams(searchParams)}` })
+    }
+
+    const newBingoForm = () => {
+        navigate({ pathname: "/" })
     }
 
     const activateSquare = (index: number) => () => {
@@ -47,7 +52,10 @@ function BingoPage() {
             setBackgroundColor(backgroundColorSearchParam)
         const textColorSearchParam = searchParams.get("textColor")
         if (textColorSearchParam)
-            setBackgroundColor(textColorSearchParam)
+            setTextColor(textColorSearchParam)
+        const tileColorSearchParam = searchParams.get("tileColor")
+        if (tileColorSearchParam)
+            setTileColor(tileColorSearchParam)
         const titleSearchParam = searchParams.get("title")
         if (titleSearchParam)
             setTitle(titleSearchParam)
@@ -58,7 +66,7 @@ function BingoPage() {
         if (bingoElements.length > 0) {
             const hash = getHashFromBingoElements(bingoElements);
             const storedState = getStateFromHash(hash);
-            if (storedState != undefined) {
+            if (storedState !== undefined) {
                 setBoardState(storedState)
             } else {
                 setBoardState(newBingo(bingoElements))
@@ -67,14 +75,14 @@ function BingoPage() {
     }, [bingoElements])
 
     useEffect(() => {
-        if (boardState) {
+        if (boardState && bingoElements) {
             const hash = getHashFromBingoElements(bingoElements);
             storeStateWithHash(boardState, hash);
         }
-    }, [boardState])
-
+    }, [boardState, bingoElements])
+    console.log(backgroundColor)
     return (
-        <div className="app">
+        <div className="app" style={{ backgroundColor: backgroundColor }}>
             <header className="header">
                 {title}
             </header>
@@ -83,7 +91,11 @@ function BingoPage() {
 
                     <ButtonGroup>
                         <Button className={"button"} variant="primary"
-                            onClick={() => returnToForm()}>{boardState?.squares.length ? "Edit bingo tiles" : "Create bingo tile set"}</Button>
+                            onClick={() => newBingoForm()}>{"Create bingo tile set"}</Button>
+                        {boardState?.squares.length &&
+                            <Button className={"button"} variant="primary"
+                                onClick={() => returnToForm()}>{"Edit bingo tiles"}</Button>}
+
                         {!!bingoElements.length && <Button variant="warning" disabled={!bingoElements} onClick={() => {
                             setBoardState(newBingo(bingoElements));
                         }}>Generate new board</Button>}
@@ -92,7 +104,7 @@ function BingoPage() {
                         <Grid>
                             {boardState?.squares.map((value, index) =>
                                 <BingoSquare active={value.active} text={value.text} key={index}
-                                    onClick={activateSquare(index)} />)}
+                                    onClick={activateSquare(index)} textColor={textColor} baseBackgroundColor={tileColor} />)}
                         </Grid>
                     ) : (<div className='onboarding-message-wrapper'><div>No board yet :( <br /> Start by either clicking the button above to create a new bingo tile set or by pasting in a tile set created by someone else in the url</div></div>)}
 

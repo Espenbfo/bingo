@@ -7,17 +7,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ColorSelect } from "./color-select";
 import { createSearchParams, useNavigate, useSearchParams } from "react-router-dom";
 import { BingoData } from "../../common-types";
-type Props = {};
-
 const formDataToBingoData = (data: FormValues): BingoData => {
     return {
         title: data.title,
+        tileColor: data.tileColor,
         backgroundColor: data.backgroundColor,
         textColor: data.textColor,
         option: data.option.map(val => val.value)
     }
 }
-export const NewBingoForm = ({ }: Props) => {
+export const NewBingoForm = () => {
     let [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
@@ -27,20 +26,23 @@ export const NewBingoForm = ({ }: Props) => {
 
     const defaultTextColorSearchParam = searchParams.get("textColor")
 
+    const defaultTileColorSearchParam = searchParams.get("tileColor")
+
     const defaultTitle = searchParams.get("title")
 
 
-    const { register, handleSubmit, watch, formState: { errors }, control } = useForm<FormValues>({
+    const { register, handleSubmit, formState: { errors }, control } = useForm<FormValues>({
         resolver: zodResolver(schema),
         defaultValues: {
-            backgroundColor: defaultBackgroundColorSearchParam ?? "",
-            textColor: defaultTextColorSearchParam ?? "",
+            backgroundColor: defaultBackgroundColorSearchParam ?? "#961056",
+            textColor: defaultTextColorSearchParam ?? "#ffffff",
+            tileColor: defaultTileColorSearchParam ?? "#7b4e81",
             option: defaultOptions.length ? defaultOptions.map(val => ({ value: val })) : Array.from(Array(16).keys()).map(() => ({ value: "" })),
             title: defaultTitle ?? ""
         }
     });
 
-    const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
+    const { fields, append, remove } = useFieldArray({
         control, // control props comes from useForm (optional: if you are using FormContext)
         name: "option", // unique name for your Field Array
     });
@@ -59,6 +61,7 @@ export const NewBingoForm = ({ }: Props) => {
             <h3 className="section-title">Color theme</h3>
 
             <ColorSelect register={register} label="backgroundColor" />
+            <ColorSelect register={register} label="tileColor" />
             <ColorSelect register={register} label="textColor" />
 
             <h3 className="section-title">Add bingo option</h3>

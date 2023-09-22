@@ -34,5 +34,4 @@ export const storeStateWithHash = (state: BoardState, hash: string) => {
         localStorage.setItem("state", JSON.stringify(State))
         return
     }
-    throw new Error("Something went wrong with storing the board state")
 }
