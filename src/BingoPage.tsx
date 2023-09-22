@@ -96,7 +96,7 @@ function BingoPage() {
                             <Button className={"button"} variant="primary"
                                 onClick={() => returnToForm()}>{"Edit bingo tiles"}</Button>}
 
-                        {!!bingoElements.length && <Button variant="warning" disabled={!bingoElements} onClick={() => {
+                        {!!bingoElements.length && <Button className={"button"} variant="warning" disabled={!bingoElements} onClick={() => {
                             setBoardState(newBingo(bingoElements));
                         }}>Generate new board</Button>}
                     </ButtonGroup>
