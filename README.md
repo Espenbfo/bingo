@@ -1,3 +1,3 @@
-# Eurovision bingo!
+# Bingo!
 
 https://fossei.de/bingo
