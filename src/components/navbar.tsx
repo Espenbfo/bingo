@@ -4,7 +4,7 @@ import "./navbar.css"
 
 type Props = {
     title: string
-    onNewTiles: (() => void) | null
+    onNewTiles?: () => void
 }
 
 export const BingoNavBar = ({title, onNewTiles} : Props) => {
@@ -19,7 +19,7 @@ export const BingoNavBar = ({title, onNewTiles} : Props) => {
                     <Nav>
                         {onNewTiles !== null && <Nav.Link onClick={onNewTiles}>New Tiles</Nav.Link>}
                         <Nav.Link href="/">Create your own bingo board</Nav.Link>
-                        {formSearchParams && <Nav.Link href={`/?=${formSearchParams}`}>Edit current Bingo board</Nav.Link>}
+                        {formSearchParams && <Nav.Link href={`/?${formSearchParams}`}>Edit current Bingo board</Nav.Link>}
                     </Nav>
                 </Navbar.Collapse>
             </Container>
