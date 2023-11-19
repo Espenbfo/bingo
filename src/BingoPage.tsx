@@ -73,11 +73,11 @@ function BingoPage() {
             storeStateWithHash(boardState, hash);
         }
     }, [boardState, bingoElements])
-    
+
     return (
         <div className="app" style={{ backgroundColor: backgroundColor }}>
             <BingoNavBar title={title} onNewTiles={!!bingoElements.length ? () => {
-                        setBoardState(newBingo(bingoElements))} : null}/>
+                        setBoardState(newBingo(bingoElements))} : undefined}/>
             {bingoElements && (
                 <>
                     {boardState?.squares.length ? (
