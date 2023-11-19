@@ -13,7 +13,7 @@ export const BingoNavBar = ({title, onNewTiles} : Props) => {
     return (
         <Navbar expand="lg" className="navbar">
             <Container>
-                <Navbar.Brand>{title}</Navbar.Brand>
+                <Navbar.Brand>{title.length>0 ? title : "Bingo creator"}</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav>
