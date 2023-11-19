@@ -9,6 +9,7 @@ import { ButtonGroup } from "./components/button-group";
 import { Button } from "react-bootstrap";
 import { createSearchParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { getHashFromBingoElements, getStateFromHash, storeStateWithHash } from './storage';
+import { BingoNavBar } from './components/navbar';
 
 function BingoPage() {
     let [searchParams] = useSearchParams();
@@ -22,14 +23,6 @@ function BingoPage() {
 
     const [boardState, setBoardState] = useState<BoardState | undefined>(undefined)
     const [showBingoOverlay, setShowBingoOverlay] = useState(false)
-
-    const returnToForm = () => {
-        navigate({ pathname: "/", search: `?${createSearchParams(searchParams)}` })
-    }
-
-    const newBingoForm = () => {
-        navigate({ pathname: "/" })
-    }
 
     const activateSquare = (index: number) => () => {
         setBoardState(prevState => {
@@ -80,26 +73,13 @@ function BingoPage() {
             storeStateWithHash(boardState, hash);
         }
     }, [boardState, bingoElements])
-    console.log(backgroundColor)
+    
     return (
         <div className="app" style={{ backgroundColor: backgroundColor }}>
-            <header className="header">
-                {title}
-            </header>
+            <BingoNavBar title={title} onNewTiles={!!bingoElements.length ? () => {
+                        setBoardState(newBingo(bingoElements))} : null}/>
             {bingoElements && (
                 <>
-
-                    <ButtonGroup>
-                        <Button className={"button"} variant="primary"
-                            onClick={() => newBingoForm()}>{"Create bingo tile set"}</Button>
-                        {boardState?.squares.length &&
-                            <Button className={"button"} variant="primary"
-                                onClick={() => returnToForm()}>{"Edit bingo tiles"}</Button>}
-
-                        {!!bingoElements.length && <Button className={"button"} variant="warning" disabled={!bingoElements} onClick={() => {
-                            setBoardState(newBingo(bingoElements));
-                        }}>Generate new board</Button>}
-                    </ButtonGroup>
                     {boardState?.squares.length ? (
                         <Grid>
                             {boardState?.squares.map((value, index) =>
