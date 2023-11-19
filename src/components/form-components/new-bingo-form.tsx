@@ -29,7 +29,7 @@ export const NewBingoForm = () => {
     const defaultTileColorSearchParam = searchParams.get("tileColor")
 
     const defaultTitle = searchParams.get("title")
-
+    console.log(defaultBackgroundColorSearchParam)
 
     const { register, handleSubmit, formState: { errors }, control } = useForm<FormValues>({
         resolver: zodResolver(schema),

@@ -1,19 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Grid } from "./components/grid";
 import "./App.css"
 import { BingoSquare } from "./components/bingo-square";
 import { BoardState, newBingo, update } from "./helper-functios";
 import cloneDeep from "lodash/cloneDeep"
 import { BingoAlert } from "./components/bingo-alert";
-import { ButtonGroup } from "./components/button-group";
-import { Button } from "react-bootstrap";
-import { createSearchParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { getHashFromBingoElements, getStateFromHash, storeStateWithHash } from './storage';
 import { BingoNavBar } from './components/navbar';
 
 function BingoPage() {
     let [searchParams] = useSearchParams();
-    const navigate = useNavigate();
 
     const [bingoElements, setBingoElements] = useState<string[]>([]);
     const [backgroundColor, setBackgroundColor] = useState<string>("");
