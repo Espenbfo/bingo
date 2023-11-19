@@ -22,7 +22,8 @@
 }
 
 .button {
-    margin: 0 2rem;
+    max-width: 120px;
+    margin: 0 5px;
 }
 
 .onboarding-message-wrapper {
