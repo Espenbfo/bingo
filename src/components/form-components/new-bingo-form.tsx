@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ColorSelect } from "./color-select";
 import { createSearchParams, useNavigate, useSearchParams } from "react-router-dom";
 import { BingoData } from "../../common-types";
+import { useState } from "react";
 const formDataToBingoData = (data: FormValues): BingoData => {
     return {
         title: data.title,
@@ -29,9 +30,12 @@ export const NewBingoForm = () => {
     const defaultTileColorSearchParam = searchParams.get("tileColor")
 
     const defaultTitle = searchParams.get("title")
+
+    const [isLoading, setLoading] = useState(false)
+
     console.log(defaultBackgroundColorSearchParam)
 
-    const { register, handleSubmit, formState: { errors }, control } = useForm<FormValues>({
+    const { register, handleSubmit, formState: { errors }, control, getFieldState, getValues } = useForm<FormValues>({
         resolver: zodResolver(schema),
         defaultValues: {
             backgroundColor: defaultBackgroundColorSearchParam ?? "#961056",
@@ -42,7 +46,7 @@ export const NewBingoForm = () => {
         }
     });
 
-    const { fields, append, remove } = useFieldArray({
+    const { fields, append, remove} = useFieldArray({
         control, // control props comes from useForm (optional: if you are using FormContext)
         name: "option", // unique name for your Field Array
     });
@@ -52,12 +56,35 @@ export const NewBingoForm = () => {
         navigate({ pathname: "/bingo", search: `?${createSearchParams(formDataToBingoData(data))}` })
     }
 
+    const generateNewBoardFromTitle = () => {
+        setLoading(true)
+        fetch("https://2c1hmnnxae.execute-api.eu-west-2.amazonaws.com/generate_bingo", {method: "POST", body: JSON.stringify({ title: getValues("title") })}).then(res => bingoCallback(res))
+    }
+
+    const bingoCallback = async (res: Response) => {
+        console.log(res)
+        let body: string[] = await res.json()
+        remove()
+        body.map(x => {
+            append({value: x})
+        })
+        console.log(body)
+        setLoading(false)
+
+    }
     return (
         <form className={clsx("main-form")} onSubmit={handleSubmit(onSubmit)}>
             <h1 className="section-title">New bingo form</h1>
 
             <h3 className="section-title">Title</h3>
+            <span className="title-wrapper">
             <input {...register("title")} />
+            {isLoading ? 
+            <span>Sending request...</span>
+            :
+            <button className="button" onClick={generateNewBoardFromTitle}>Generate some options from this title</button>}
+            </span>
+
             <h3 className="section-title">Color theme</h3>
 
             <ColorSelect register={register} label="backgroundColor" />
@@ -80,8 +107,8 @@ export const NewBingoForm = () => {
             </div>
             {errors.option?.root ? errors.option.root.message : false}
 
-            <button onClick={() => append({ value: "" })}>Add option</button>
-            <input type="submit" />
+            <button className="button" onClick={() => append({ value: "" })}>Add option</button>
+            <input className="button" type="submit" />
         </form>
     );
 }
